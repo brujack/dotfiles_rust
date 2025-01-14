@@ -1,5 +1,5 @@
 [package]
-name = "rosetta_file_linker"
+name = "setup_env"
 version = "0.1.0"
 edition = "2021"
 
@@ -15,19 +15,11 @@ target-dir = "target"
 incremental = false
 lto = "fat"
 
-[workspace]
-members = ["src"]
-
 [package.metadata]
 description = "A tool to install Rosetta and link files based on OS-specific configurations."
 homepage = "https://github.com/brujack/dotfiles_rust"
 repository = "https://github.com/brujack/dotfiles_rust"
 license = "Apache-2.0"
-
-[package.metadata.github-actions]
-# GitHub Actions workflow configuration
-enable = true
-actions = ["test", "build"]
 
 [[bin]]
 name = "setup_env"
