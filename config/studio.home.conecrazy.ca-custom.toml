@@ -1,0 +1,7 @@
+[settings]
+install_rosetta = true
+link_files = false
+
+[file_locations]
+textfiles_dir = "files_link"   # Directory containing files to be linked
+link_target_dir = "<home_directory>" # Target directory for symbolic links at the root of the home directory

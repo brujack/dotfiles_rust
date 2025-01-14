@@ -1,0 +1,18 @@
+target/
+*.rs.bk
+.DS_Store
+# Ignore configuration backups
+config/*.bak
+
+# Ignore log files
+*.log
+
+# Ignore temporary files created by editors
+*~
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# Ignore Cargo.lock
+Cargo.lock

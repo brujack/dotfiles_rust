@@ -1,0 +1,13 @@
+[settings]
+# Whether to attempt installing Rosetta (only applicable for macOS)
+install_rosetta = false
+
+# Whether to link files from the source directory to the target directory
+link_files = false
+
+[file_locations]
+# The directory containing files to be linked
+textfiles_dir = "files_link"
+
+# The target directory where files will be linked (default to the home directory root)
+link_target_dir = "<home_directory>"
