@@ -71,9 +71,16 @@ jobs:
         echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
         echo "Created tag: $NEW_TAG"
 
+    - name: Create and Push Tag
+      run: |
+        NEW_TAG=${{ env.NEW_TAG }}
+        git tag -a "$NEW_TAG" -m "Release $NEW_TAG"
+        git push origin "$NEW_TAG"
+
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
       with:
+        tag_name: ${{ env.NEW_TAG }}
         files: target/release/setup_env
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -91,18 +98,10 @@ jobs:
         git config --global user.name "GitHub Actions"
         git config --global user.email "actions@github.com"
 
-    - name: Generate and Push Tags
+    - name: Update Latest Tag
       run: |
         NEW_TAG=${{ env.NEW_TAG }}
-
-        # Create the new tag
-        git tag -a "$NEW_TAG" -m "Release for $NEW_TAG"
-
-        # Update the 'latest' tag to point to the new release
         git tag -f latest
-
-        # Push tags to the remote repository
-        git push origin "$NEW_TAG"
         git push origin -f latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
