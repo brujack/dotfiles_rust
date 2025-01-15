@@ -7,7 +7,12 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        target: [x86_64-unknown-linux-gnu, aarch64-unknown-linux-gnu, x86_64-apple-darwin, aarch64-apple-darwin]
+
+    runs-on: ${{ matrix.os }}
 
     steps:
     - name: Checkout code
@@ -17,46 +22,32 @@ jobs:
       uses: actions-rs/toolchain@v1
       with:
         toolchain: stable
-        target: x86_64-unknown-linux-gnu
-        profile: minimal
+        target: ${{ matrix.target }}
 
     - name: Build project
       run: |
-        cargo build --release
-
-    - name: Run tests
-      run: |
-        cargo test
+        cargo build --release --target ${{ matrix.target }}
 
     - name: Upload binary as artifact
       uses: actions/upload-artifact@v3
       with:
-        name: setup_env
-        path: target/release/setup_env
+        name: ${{ matrix.target }}-binary
+        path: target/${{ matrix.target }}/release/*
 
   release:
     runs-on: ubuntu-latest
     needs: build
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+    - name: Download build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        path: ./artifacts
 
     - name: Set up Git Identity
       run: |
         git config --global user.name "GitHub Actions"
         git config --global user.email "actions@github.com"
-
-    - name: Set up Rust
-      uses: actions-rs/toolchain@v1
-      with:
-        toolchain: stable
-        target: x86_64-unknown-linux-gnu
-        profile: minimal
-
-    - name: Build project
-      run: |
-        cargo build --release
 
     - name: Save New Tag to Environment
       id: tag-info
@@ -86,7 +77,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ env.NEW_TAG }}
-        files: target/release/setup_env
+        files: ./artifacts/**
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
