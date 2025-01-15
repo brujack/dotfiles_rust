@@ -56,13 +56,14 @@ jobs:
     - name: Save New Tag to Environment
       id: tag-info
       run: |
+        git fetch --tags
         DATE=$(date +"%Y%m%d")
-        EXISTING_TAGS=$(git tag | grep "^${DATE}")
+        EXISTING_TAGS=$(git tag | grep "^${DATE}" || true)
 
         if [ -z "$EXISTING_TAGS" ]; then
             NEW_TAG="${DATE}-1"
         else
-            MAX_INCREMENT=$(echo "$EXISTING_TAGS" | awk -F '-' '{print $2}' | sort -nr | head -n1)
+            MAX_INCREMENT=$(echo "$EXISTING_TAGS" | awk -F '-' '{print $2}' | sort -nr | head -n1 || echo "0")
             NEW_INCREMENT=$((MAX_INCREMENT + 1))
             NEW_TAG="${DATE}-${NEW_INCREMENT}"
         fi
