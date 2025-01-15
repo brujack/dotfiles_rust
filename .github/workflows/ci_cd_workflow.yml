@@ -12,12 +12,16 @@ jobs:
         include:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
+            binary_name: setup_env-linux-x86-64
           - os: ubuntu-latest
             target: aarch64-unknown-linux-gnu
+            binary_name: setup_env-linux-arm
           - os: macos-latest
             target: x86_64-apple-darwin
+            binary_name: setup_env-macos-x86-64
           - os: macos-latest
             target: aarch64-apple-darwin
+            binary_name: setup_env-macos-arm
 
     runs-on: ${{ matrix.os }}
 
@@ -40,11 +44,15 @@ jobs:
       env:
         CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
 
-    - name: Upload binary as artifact
+    - name: Rename and Upload Binary
+      run: |
+        mv target/${{ matrix.target }}/release/setup_env ./artifacts/${{ matrix.binary_name }}
+
+    - name: Upload Binary
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ matrix.target }}-binary
-        path: target/${{ matrix.target }}/release/setup_env
+        name: ${{ matrix.binary_name }}
+        path: ./artifacts/${{ matrix.binary_name }}
 
   release:
     runs-on: ubuntu-latest
@@ -94,6 +102,6 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ env.NEW_TAG }}
-        files: ./artifacts/**/*.setup_env
+        files: ./artifacts/*
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
