@@ -45,17 +45,15 @@ jobs:
         CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
 
     - name: Ensure Artifacts Directory
-      run: |
-        mkdir -p ./artifacts
+      run: mkdir -p ./artifacts
 
-    - name: Rename and Upload Binary
-      run: |
-        mv target/${{ matrix.target }}/release/setup_env ./artifacts/${{ matrix.binary_name }}
+    - name: Rename Binary
+      run: mv target/${{ matrix.target }}/release/setup_env ./artifacts/${{ matrix.binary_name }}
 
     - name: Upload Binary
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ matrix.binary_name }}
+        name: binaries
         path: ./artifacts/${{ matrix.binary_name }}
 
   release:
@@ -66,10 +64,16 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
       with:
-        fetch-depth: 0  # Ensure full history and tags are fetched
+        fetch-depth: 0
 
     - name: Download build artifacts
       uses: actions/download-artifact@v3
+      with:
+        name: binaries
+        path: ./artifacts
+
+    - name: Verify Downloaded Artifacts
+      run: ls -l ./artifacts
 
     - name: Set up Git Identity
       run: |
