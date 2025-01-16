@@ -51,7 +51,7 @@ jobs:
       run: mv target/${{ matrix.target }}/release/setup_env ./artifacts/${{ matrix.binary_name }}
 
     - name: Upload Binary
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: binaries
         path: ./artifacts/${{ matrix.binary_name }}
@@ -67,7 +67,7 @@ jobs:
         fetch-depth: 0
 
     - name: Download build artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: binaries
         path: ./artifacts
