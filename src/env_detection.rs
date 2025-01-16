@@ -1,4 +1,5 @@
 use std::fs;
+use anyhow::{Context, Error}; // Import the Context trait for `context` or `with_context`
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -20,49 +21,29 @@ pub struct FileLocations {
 }
 
 pub fn detect_os_and_load_config() -> Config {
-    let os_name = detect_os();
     let hostname = detect_hostname();
 
-    let default_config_path = "config/default.toml";
-    let os_specific_config_path = format!("config/{}.toml", os_name);
+    // Hostname-specific config file
     let hostname_specific_config_path = format!("config/{}-custom.toml", hostname);
 
-    let mut config = load_config(default_config_path).expect("Failed to load default configuration");
+    // Start with an empty base config
+    let mut config = Config {
+        settings: Settings {
+            install_rosetta: false,
+            link_files: false,
+        },
+        file_locations: FileLocations {
+            textfiles_dir: String::new(),
+            link_target_dir: String::new(),
+        },
+    };
 
-    if let Ok(os_config) = load_config(&os_specific_config_path) {
-        merge_configs(&mut config, os_config);
-    }
-
+    // Load hostname-specific configuration if it exists
     if let Ok(hostname_config) = load_config(&hostname_specific_config_path) {
         merge_configs(&mut config, hostname_config);
     }
 
     config
-}
-
-fn detect_os() -> String {
-    if cfg!(target_os = "macos") {
-        "macos".to_string()
-    } else if cfg!(target_os = "linux") {
-        match fs::read_to_string("/etc/os-release") {
-            Ok(contents) => {
-                if contents.contains("Ubuntu") {
-                    "ubuntu".to_string()
-                } else if contents.contains("Debian") {
-                    "debian".to_string()
-                } else if contents.contains("Red Hat") {
-                    "redhat".to_string()
-                } else if contents.contains("CentOS") {
-                    "centos".to_string()
-                } else {
-                    "unknown".to_string()
-                }
-            }
-            Err(_) => "unknown".to_string(),
-        }
-    } else {
-        "unknown".to_string()
-    }
 }
 
 fn detect_hostname() -> String {
@@ -78,9 +59,12 @@ fn detect_hostname() -> String {
         .unwrap_or_else(|_| "unknown".to_string())
 }
 
-fn load_config(path: &str) -> Result<Config, toml::de::Error> {
-    let content = fs::read_to_string(path).expect(&format!("Failed to read config file: {}", path));
-    toml::from_str(&content)
+fn load_config(path: &str) -> Result<Config, Error> {
+    let content = fs::read_to_string(path)
+        .with_context(|| format!("Failed to read config file: {}", path))?;
+    let config = toml::from_str(&content)
+        .with_context(|| format!("Failed to parse config file: {}", path))?;
+    Ok(config)
 }
 
 fn merge_configs(base: &mut Config, override_config: Config) {
