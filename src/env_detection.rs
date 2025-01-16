@@ -67,7 +67,14 @@ fn detect_os() -> String {
 
 fn detect_hostname() -> String {
     hostname::get()
-        .map(|hostname| hostname.to_string_lossy().to_string())
+        .map(|hostname| {
+            let full_hostname = hostname.to_string_lossy();
+            full_hostname
+                .split('.')
+                .next()
+                .unwrap_or("unknown")
+                .to_string()
+        })
         .unwrap_or_else(|_| "unknown".to_string())
 }
 
