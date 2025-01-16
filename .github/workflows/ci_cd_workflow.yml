@@ -44,9 +44,10 @@ jobs:
       env:
         CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
 
+    - name: Move Binary to Root Directory
+      run: mv target/${{ matrix.target }}/release/setup_env ${{ matrix.binary_name }}
+
     - name: Upload Binary
-      run: |
-        mv target/${{ matrix.target }}/release/setup_env ${{ matrix.binary_name }}
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.binary_name }}
