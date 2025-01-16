@@ -68,8 +68,6 @@ jobs:
 
     - name: Download all build artifacts
       uses: actions/download-artifact@v4
-      with:
-        path: ./artifacts
 
     - name: Verify Downloaded Artifacts
       run: |
@@ -109,6 +107,10 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ env.NEW_TAG }}
-        files: ./artifacts/*
+        files: |
+          ./artifacts/setup_env-linux-x86-64
+          ./artifacts/setup_env-linux-arm
+          ./artifacts/setup_env-macos-x86-64
+          ./artifacts/setup_env-macos-arm
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
