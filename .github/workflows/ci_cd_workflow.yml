@@ -44,10 +44,13 @@ jobs:
       env:
         CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
 
-    - name: Rename and Upload Binary
-      run: |
-        mkdir -p ./artifacts
-        mv target/${{ matrix.target }}/release/setup_env ./artifacts/${{ matrix.binary_name }}
+    - name: Ensure Artifacts Directory
+      run: mkdir -p ./artifacts
+
+    - name: Rename Binary
+      run: mv target/${{ matrix.target }}/release/setup_env ./artifacts/${{ matrix.binary_name }}
+
+    - name: Upload Binary
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.binary_name }}
