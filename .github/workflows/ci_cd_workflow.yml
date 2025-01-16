@@ -44,10 +44,9 @@ jobs:
       env:
         CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
 
-    - name: Rename Binary
-      run: mv target/${{ matrix.target }}/release/setup_env ${{ matrix.binary_name }}
-
     - name: Upload Binary
+      run: |
+        mv target/${{ matrix.target }}/release/setup_env ${{ matrix.binary_name }}
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.binary_name }}
@@ -63,15 +62,20 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Download all build artifacts
+    - name: Download all artifacts
       uses: actions/download-artifact@v4
       with:
         path: ./artifacts
 
-    - name: Verify Downloaded Artifacts
+    - name: Debug: List Files in Artifacts Directory
       run: |
-        echo "Downloaded artifacts:"
-        find ./artifacts -type f
+        echo "Listing all files in the artifacts directory:"
+        find ./artifacts
+
+    - name: Debug: List All Files in Workspace
+      run: |
+        echo "Listing all files in the workspace:"
+        find .
 
     - name: Set up Git Identity
       run: |
@@ -106,6 +110,10 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ env.NEW_TAG }}
-        files: ./artifacts/*
+        files: |
+          ./artifacts/setup_env-linux-x86-64
+          ./artifacts/setup_env-linux-arm
+          ./artifacts/setup_env-macos-x86-64
+          ./artifacts/setup_env-macos-arm
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
