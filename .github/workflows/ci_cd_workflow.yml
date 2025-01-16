@@ -53,7 +53,7 @@ jobs:
     - name: Upload Binary
       uses: actions/upload-artifact@v4
       with:
-        name: binaries
+        name: ${{ matrix.binary_name }}  # Unique artifact name based on binary name
         path: ./artifacts/${{ matrix.binary_name }}
 
   release:
@@ -69,7 +69,6 @@ jobs:
     - name: Download build artifacts
       uses: actions/download-artifact@v4
       with:
-        name: binaries
         path: ./artifacts
 
     - name: Verify Downloaded Artifacts
