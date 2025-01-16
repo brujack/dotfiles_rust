@@ -67,10 +67,9 @@ jobs:
         fetch-depth: 0
 
     - name: Download all build artifacts
-      run: |
-        mkdir -p ./artifacts
-        actions/download-artifact@v4
-        mv * ./artifacts/
+      uses: actions/download-artifact@v4
+      with:
+        path: ./artifacts
 
     - name: Verify Downloaded Artifacts
       run: |
