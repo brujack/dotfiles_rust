@@ -67,12 +67,12 @@ jobs:
       with:
         path: ./artifacts
 
-    - name: Debug: List Files in Artifacts Directory
+    - name: Debug List Files in Artifacts Directory
       run: |
         echo "Listing all files in the artifacts directory:"
         find ./artifacts
 
-    - name: Debug: List All Files in Workspace
+    - name: Debug List All Files in Workspace
       run: |
         echo "Listing all files in the workspace:"
         find .
