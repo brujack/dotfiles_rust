@@ -81,7 +81,8 @@ jobs:
 
     - name: Move Artifacts to Correct Directory
       run: |
-        mv * ./artifacts/
+        find . -mindepth 1 -maxdepth 1 -not -name artifacts -exec mv {} ./artifacts/ \;
+
 
     - name: Debug Final Artifacts Directory
       run: |
