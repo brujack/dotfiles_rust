@@ -44,14 +44,16 @@ jobs:
       env:
         CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
 
-    - name: Move Binary to Root Directory
-      run: mv target/${{ matrix.target }}/release/setup_env ${{ matrix.binary_name }}
+    - name: Move Binary to Artifacts Directory
+      run: |
+        mkdir -p ./artifacts
+        mv target/${{ matrix.target }}/release/setup_env ./artifacts/${{ matrix.binary_name }}
 
     - name: Upload Binary
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.binary_name }}
-        path: ${{ matrix.binary_name }}
+        path: ./artifacts/${{ matrix.binary_name }}
 
   release:
     runs-on: ubuntu-latest
@@ -111,10 +113,6 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ env.NEW_TAG }}
-        files: |
-          ./artifacts/setup_env-linux-x86-64
-          ./artifacts/setup_env-linux-arm
-          ./artifacts/setup_env-macos-x86-64
-          ./artifacts/setup_env-macos-arm
+        files: ./artifacts/*
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
