@@ -44,16 +44,37 @@ jobs:
       env:
         CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
 
+    - name: Install Apple Code Signing Certificate
+      if: startsWith(matrix.target, 'x86_64-apple-darwin') || startsWith(matrix.target, 'aarch64-apple-darwin')
+      run: |
+        echo "${{ secrets.APPLE_CERTIFICATE }}" | base64 --decode > apple_certificate.p12
+        security create-keychain -p "" build.keychain
+        security import apple_certificate.p12 -k build.keychain -P "${{ secrets.APPLE_CERT_PASSWORD }}" -T /usr/bin/codesign
+        security list-keychain -s build.keychain
+        security set-keychain-settings -t 3600 -u build.keychain
+        security unlock-keychain -p "" build.keychain
+
+    - name: Sign Binary
+      if: startsWith(matrix.target, 'x86_64-apple-darwin') || startsWith(matrix.target, 'aarch64-apple-darwin')
+      run: |
+        codesign --verbose --force --sign "Developer ID Application" \
+        --timestamp ./target/${{ matrix.target }}/release/setup_env
+
+    - name: Verify Signature
+      if: startsWith(matrix.target, 'x86_64-apple-darwin') || startsWith(matrix.target, 'aarch64-apple-darwin')
+      run: |
+        codesign --verify --deep --strict --verbose=2 ./target/${{ matrix.target }}/release/setup_env
+
     - name: Move Binary to Artifacts Directory
       run: |
-        mkdir -p ./artifacts
-        mv target/${{ matrix.target }}/release/setup_env ./artifacts/${{ matrix.binary_name }}
+        mkdir -p ./${{ matrix.binary_name }}
+        mv target/${{ matrix.target }}/release/setup_env ./${{ matrix.binary_name }}/${{ matrix.binary_name }}
 
     - name: Upload Binary
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.binary_name }}
-        path: ./artifacts/${{ matrix.binary_name }}
+        path: ./${{ matrix.binary_name }}/${{ matrix.binary_name }}
 
   release:
     runs-on: ubuntu-latest
