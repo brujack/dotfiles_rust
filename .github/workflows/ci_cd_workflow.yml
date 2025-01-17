@@ -73,22 +73,6 @@ jobs:
         echo "Listing all files in the current directory:"
         find .
 
-        echo "Listing all files in the ./artifacts directory:"
-        find ./artifacts || echo "Artifacts directory not found!"
-
-    - name: Ensure Artifacts Directory
-      run: mkdir -p ./artifacts
-
-    - name: Extract Nested Binaries to Top-Level Artifacts Directory
-      run: |
-        find ./artifacts -type f -executable -exec mv {} ./artifacts/ \;
-        find ./artifacts -mindepth 1 -type d -exec rm -rf {} +
-
-    - name: Debug Final Artifacts Directory
-      run: |
-        echo "Final artifacts directory contents:"
-        find ./artifacts
-
     - name: Set up Git Identity
       run: |
         git config --global user.name "GitHub Actions"
@@ -122,6 +106,10 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         tag_name: ${{ env.NEW_TAG }}
-        files: ./artifacts/*
+        files: |
+          ./setup_env-macos-arm/setup_env-macos-arm
+          ./setup_env-macos-x86-64/setup_env-macos-x86-64
+          ./setup_env-linux-x86-64/setup_env-linux-x86-64
+          ./setup_env-linux-arm/setup_env-linux-arm
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
