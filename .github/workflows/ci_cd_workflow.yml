@@ -67,18 +67,26 @@ jobs:
 
     - name: Download all artifacts
       uses: actions/download-artifact@v4
-      with:
-        path: ./artifacts
 
-    - name: Debug List Files in Artifacts Directory
+    - name: Debug List Files After Download
       run: |
-        echo "Listing all files in the artifacts directory:"
-        find ./artifacts
-
-    - name: Debug List All Files in Workspace
-      run: |
-        echo "Listing all files in the workspace:"
+        echo "Listing all files in the current directory:"
         find .
+
+        echo "Listing all files in the ./artifacts directory:"
+        find ./artifacts || echo "Artifacts directory not found!"
+
+    - name: Ensure Artifacts Directory
+      run: mkdir -p ./artifacts
+
+    - name: Move Artifacts to Correct Directory
+      run: |
+        mv * ./artifacts/
+
+    - name: Debug Final Artifacts Directory
+      run: |
+        echo "Final artifacts directory contents:"
+        find ./artifacts
 
     - name: Set up Git Identity
       run: |
