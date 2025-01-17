@@ -79,10 +79,10 @@ jobs:
     - name: Ensure Artifacts Directory
       run: mkdir -p ./artifacts
 
-    - name: Move Artifacts to Correct Directory
+    - name: Extract Nested Binaries to Top-Level Artifacts Directory
       run: |
-        find . -mindepth 1 -maxdepth 1 -not -name artifacts -exec mv {} ./artifacts/ \;
-
+        find ./artifacts -type f -executable -exec mv {} ./artifacts/ \;
+        find ./artifacts -mindepth 1 -type d -exec rm -rf {} +
 
     - name: Debug Final Artifacts Directory
       run: |
