@@ -58,6 +58,7 @@ jobs:
       if: startsWith(matrix.target, 'x86_64-apple-darwin') || startsWith(matrix.target, 'aarch64-apple-darwin')
       run: |
           echo "Starting signing without timestamp at $(date)"
+          ls -l ./target/${{ matrix.target }}/release/*
           codesign --verbose --force --sign "Developer ID Application" ./target/${{ matrix.target }}/release/setup_env
           echo "Finished signing without timestamp at $(date)"
 
