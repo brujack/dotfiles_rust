@@ -80,7 +80,12 @@ jobs:
       run: |
         echo "Create keychain profile"
         xcrun notarytool store-credentials "notarytool-profile" --apple-id "$MACOS_NOTARIZATION_APPLE_ID" --team-id "$MACOS_NOTARIZATION_TEAM_ID" --password "$MACOS_NOTARIZATION_PWD"
-        xcrun notarytool submit --keychain-profile "notarytool-profile" --wait target/${{ matrix.target }}/release/setup_env
+        # We can't notarize an app bundle directly, but we need to compress it as an archive.
+        # Therefore, we create a zip file containing our app bundle, so that we can send it to the
+        # notarization service
+        echo "Creating temp notarization archive"
+        ditto -c -k --keepParent "target/${{ matrix.target }}/release/setup_env" "setupenv.zip"
+        xcrun notarytool submit "setupenv.zip" --keychain-profile "notarytool-profile" --wait
         xcrun stapler staple target/${{ matrix.target }}/release/setup_env
 
     # - name: Sign Binary Without Timestamp
