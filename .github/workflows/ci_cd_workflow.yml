@@ -65,7 +65,7 @@ jobs:
           echo "Starting signing without timestamp at $(date)"
           security find-identity -v -p codesigning
           ls -l ./target/${{ matrix.target }}/release/setup_env
-          codesign --verbose --force --sign "Developer ID Application" ./target/${{ matrix.target }}/release/setup_env
+          codesign --verbose --force --sign "Developer ID Application: BRUCE F JACKSON (68D76K9A75)" ./target/${{ matrix.target }}/release/setup_env
           echo "Finished signing without timestamp at $(date)"
 
     - name: Verify Signature
