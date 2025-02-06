@@ -1,6 +1,6 @@
 [settings]
 install_rosetta = true
-link_files = false
+link_files = true
 install_homebrew = true
 
 [file_locations]

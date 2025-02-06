@@ -13,15 +13,14 @@ fn main() {
         tasks::install_rosetta::run();
     }
 
-    if config.settings.link_files {
-        tasks::file_linking::link_files(&config.file_locations.link_target_dir);
-    }
-
-    // Install Homebrew if required
     println!("Checking for Homebrew...");
     if let Err(e) = install_homebrew() {
         eprintln!("Error installing Homebrew: {}", e);
     } else {
         println!("Homebrew check/install completed.");
+    }
+
+    if config.settings.link_files {
+        tasks::file_linking::link_files(&config.file_locations.link_target_dir);
     }
 }
